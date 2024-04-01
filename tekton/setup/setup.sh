@@ -15,6 +15,9 @@ oc project case03752258
 # INSTALL SERVICE ACCOUNT AND CLUSTER BINDINGS
 oc create --save-config=true -f ./serviceAccounts/case03752258-cluster-role-binding.yaml
 
+# ALLOW SERVICE ACCOUNT PRIVILEGED ACCESS WITHIN NAMESPACE (required for tekton tasks requiring priviledged containers)
+oc adm policy add-scc-to-user privileged -z case03752258-pipeline-sa -n case03752258
+
 # CREATE MAVEN SETTINGS CONFIG MAP
 oc create configmap maven-settings --from-file=./settings.xml  --namespace=case03752258
 

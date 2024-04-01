@@ -12,7 +12,7 @@ spec:
     - name: repo-url
       description: The source repository's url (http|ssh)
       type: string
-      default: ""
+      default: "https://github.com/alliancecoder/rh-case-03752258.git"
     - name: image-tag
       description: Git commit id to be cloned
       type: string
@@ -20,7 +20,7 @@ spec:
     - name: app-dir
       description: application directory
       type: string
-      default: "./app"
+      default: "app"
     - name: GIT_BASE_IMAGE
       description: The git base image     
       type: string
@@ -85,6 +85,7 @@ spec:
         # rm "$(workspaces.source.path)/$(params.app-dir)" -rf
         
         git config --global --add safe.directory "$(workspaces.source.path)/$(params.app-dir)"
-        git clone --progress --verbose $(params.repo-url) $(workspaces.source.path)/$(params.app-dir)
+        git clone $(params.repo-url) $(workspaces.source.path)/$(params.app-dir)
         cd $(workspaces.source.path)/$(params.app-dir)
         git reset --hard $(params.image-tag)
+        git filter-branch --subdirectory-filter quarkus

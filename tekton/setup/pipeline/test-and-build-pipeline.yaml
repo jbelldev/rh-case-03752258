@@ -17,7 +17,7 @@ spec:
   - name: repo-url
     description: The source repository's url
     type: string
-    default: "git@github.com:alliancecoder/rh-case-03752258.git"
+    default: "https://github.com/alliancecoder/rh-case-03752258.git"
   - name: app-dir
     type: string
     default: "app"
