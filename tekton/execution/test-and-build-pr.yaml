@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: test-and-build-reproducer-plr-
+spec:
+  pipelineRef:
+    name: test-and-build-reproducer
+  serviceAccountName: case03752258-pipeline-sa
+  params:
+    - name: image-tag
+      value: bcc479c00aa1e50679b2b20e47340b20d464ac55
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: maven-settings
+      configMap:
+        name: maven-settings

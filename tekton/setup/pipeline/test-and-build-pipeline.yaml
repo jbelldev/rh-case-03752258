@@ -1,0 +1,73 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    app.kubernetes.io/instance: test-and-build-pipeline
+    pipeline.openshift.io/type: kubernetes
+  name: test-and-build-reproducer
+  namespace: case03752258
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings
+  params:
+  - name: image-tag
+    type: string
+    default: "latest"
+  - name: repo-url
+    description: The source repository's url
+    type: string
+    default: "git@github.com:alliancecoder/rh-case-03752258.git"
+  - name: app-dir
+    type: string
+    default: "app"
+  tasks:
+  - name: fetch-app-source
+    taskRef:
+      name: get-source-with-git
+      kind: Task
+    workspaces:
+      - name: source
+        workspace: shared-workspace
+    params:
+      - name: repo-url
+        value: $(params.repo-url)
+      - name: image-tag
+        value: $(params.image-tag)
+      - name: app-dir
+        value: $(params.app-dir)
+  - name: test-service
+    taskRef:
+      name: execute-maven-task
+      kind: Task
+    runAfter:
+      - fetch-app-source
+    params:
+      - name: GOALS
+        value: 
+          - verify
+      - name: CONTEXT_DIR
+        value: "$(params.app-dir)"
+    workspaces:
+      - name: maven-settings
+        workspace: maven-settings
+      - name: source
+        workspace: shared-workspace
+  - name: build-service
+    taskRef:
+      name: execute-maven-task
+      kind: Task
+    runAfter:
+      - test-service
+    params:
+    - name: GOALS
+      value:
+        - package
+        - "-Dmaven.test.skip=true"
+    - name: CONTEXT_DIR
+      value: "$(params.app-dir)"
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    - name: maven-settings
+      workspace: maven-settings

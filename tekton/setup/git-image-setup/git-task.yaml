@@ -1,0 +1,25 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: git-task
+  namespace: openshift
+  labels:
+    build: git-task
+spec:
+  output:
+    to:
+      kind: DockerImage
+      name: 'image-registry.openshift-image-registry.svc:5000/openshift/git-task:latest'
+  resources: {}
+  strategy:
+    type: Docker
+    dockerStrategy:
+      from:
+        kind: ImageStreamTag
+        name: 'ubi:latest'
+  postCommit: {}
+  source:
+    type: Dockerfile
+    dockerfile: |-
+      FROM registry.access.redhat.com/ubi8/ubi
+      RUN yum install -y git

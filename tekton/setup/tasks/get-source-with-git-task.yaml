@@ -1,0 +1,90 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: get-source-with-git
+spec:
+  stepTemplate:
+    name: "tekton-home-dir"
+    env:
+      - name: "HOME"
+        value: "/tekton/home"
+  params:
+    - name: repo-url
+      description: The source repository's url (http|ssh)
+      type: string
+      default: ""
+    - name: image-tag
+      description: Git commit id to be cloned
+      type: string
+      default: ""
+    - name: app-dir
+      description: application directory
+      type: string
+      default: "./app"
+    - name: GIT_BASE_IMAGE
+      description: The git base image     
+      type: string
+      default: image-registry.openshift-image-registry.svc:5000/openshift/git-task:latest
+  workspaces:
+    - name: source
+      description: The git repo will be cloned onto the volume backing this Workspace.
+    - name: ssh-directory
+      optional: true
+      description: |
+        A .ssh directory with private key, known_hosts, config, etc. Copied to
+        the user's home before git commands are executed. Used to authenticate
+        with the git remote when performing the clone. Binding a Secret to this
+        Workspace is strongly recommended over other volume types.
+    - name: basic-auth
+      optional: true
+      description: |
+        A Workspace containing a .gitconfig and .gitcredentials file. These
+        will be copied to the user's home before any git commands are run. Any
+        other files in this Workspace are ignored. It is strongly recommended
+        to use ssh-directory over basic-auth whenever possible and to bind a
+        Secret to this Workspace over other volume types.
+        https://git-scm.com/docs/git-credential
+    - name: ssl-ca-directory
+      optional: true
+      description: |
+        A workspace containing CA certificates, this will be used by Git to
+        verify the peer with when fetching or pushing over HTTPS.
+  steps:
+    - name: git-clone
+      # run the container as non root user
+      securityContext:
+        runAsUser: 1001
+      workingDir: /workspace
+      image: $(params.GIT_BASE_IMAGE)
+      env:
+      - name: WORKSPACE_SSH_DIRECTORY_BOUND
+        value: $(workspaces.ssh-directory.bound)
+      - name: WORKSPACE_SSH_DIRECTORY_PATH
+        value: $(workspaces.ssh-directory.path)
+      script: |
+        #!/usr/bin/env sh
+        set -eu
+        
+        if [ "$(workspaces.basic-auth.bound)" = "true" ] ; then
+          cp "$(workspaces.basic-auth.path)/.gitcredentials" "${HOME}/.gitcredentials"
+          cp "$(workspaces.basic-auth.path)/.gitconfig" "${HOME}/.gitconfig"
+          chmod 400 "${HOME}/.gitcredentials"
+          chmod 400 "${HOME}/.gitconfig"
+        fi
+
+        if [ "${WORKSPACE_SSH_DIRECTORY_BOUND}" = "true" ] ; then
+          rm -R ${HOME}/.ssh
+          cp -R "${WORKSPACE_SSH_DIRECTORY_PATH}" "${HOME}"/.ssh
+          # for some reason "chmod -R" does not work as expected, hence changing the permissions file by file
+          chmod 400 ${HOME}/.ssh/id_rsa
+          chmod 400 ${HOME}/.ssh/known_hosts
+          chmod 700 ${HOME}/.ssh/
+        fi
+
+        # remove app directory if you use static pvc
+        # rm "$(workspaces.source.path)/$(params.app-dir)" -rf
+        
+        git config --global --add safe.directory "$(workspaces.source.path)/$(params.app-dir)"
+        git clone --progress --verbose $(params.repo-url) $(workspaces.source.path)/$(params.app-dir)
+        cd $(workspaces.source.path)/$(params.app-dir)
+        git reset --hard $(params.image-tag)
