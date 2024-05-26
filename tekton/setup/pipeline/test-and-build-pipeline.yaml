@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   labels:
@@ -45,6 +45,7 @@ spec:
     params:
       - name: GOALS
         value: 
+          - clean
           - verify
       - name: CONTEXT_DIR
         value: "$(params.app-dir)"
