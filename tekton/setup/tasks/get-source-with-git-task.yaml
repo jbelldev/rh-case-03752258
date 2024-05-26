@@ -52,6 +52,9 @@ spec:
     - name: git-clone
       # run the container as non root user
       securityContext:
+        # NOTE: it may also be possible to modify just this value instead of the UID in the execute-maven-task Task,
+        # but this would also depend on the baseline image; I didn't check this, as it's simpler to work with this UID
+        # in both of the other images than the other way round.
         runAsUser: 1001
       workingDir: /workspace
       image: $(params.GIT_BASE_IMAGE)
