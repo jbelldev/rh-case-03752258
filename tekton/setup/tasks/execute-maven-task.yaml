@@ -168,6 +168,9 @@ spec:
 
       securityContext:
         privileged: false
+        # From my test environment, this container was able to find the `settings.xml` file without issue,
+        # so there was no need to apply this modification:
+        # runAsUser: 1001
     - args:
         - '-s'
         - $(workspaces.maven-settings.path)/settings.xml
@@ -179,6 +182,8 @@ spec:
       resources: {}
       securityContext:
         privileged: false
+        # This was the only truly required change I found to have my test environment's pipeline to run correctly
+        runAsUser: 1001
       volumeMounts:
         - mountPath: /certs/client
           name: dind-certs
