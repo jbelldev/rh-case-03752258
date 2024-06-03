@@ -5,8 +5,11 @@ metadata:
 spec:
   description: This Task can be used to run a Maven build.
   params:
-  # working image gcr.io/cloud-builders/mvn@sha256:642febb52d80a95de983dd7e2ff584a3e365e1d2a7fad795816b3acc204d641c
+  # failing gcr image gcr.io/cloud-builders/mvn@sha256:642febb52d80a95de983dd7e2ff584a3e365e1d2a7fad795816b3acc204d641c
+  # updated gcr 2024-06-03 gcr.io/cloud-builders/mvn@sha256:15713b058037904eced9bc143dd145267d9bff5c1583aca685fcdb764fba5fb0
   # failing Red Hat image registry.redhat.io/ubi8/openjdk-17@sha256:0d12c4097e098b62f78a7a31c0d711d78e1e5a53f4c007b9a5fc6cc6ab4dc018
+  # updated ubi8 RH image registry.access.redhat.com/ubi8/openjdk-17@sha256:e8cc2e476282b75d89c73057bfa713db22d72bdb2808d62d981a84c33beb2575
+  # updated ubi9 RH image registry.access.redhat.com/ubi9/openjdk-17@sha256:144419dd1caf7c4455418d2dbf99c1c02a07e9c207e9c66e0224b852633ea2fe
     - default: >-
         registry.redhat.io/ubi8/openjdk-17@sha256:0d12c4097e098b62f78a7a31c0d711d78e1e5a53f4c007b9a5fc6cc6ab4dc018
       description: Maven base image
