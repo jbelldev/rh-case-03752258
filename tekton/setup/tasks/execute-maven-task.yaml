@@ -11,7 +11,7 @@ spec:
   # updated ubi8 RH image registry.access.redhat.com/ubi8/openjdk-17@sha256:e8cc2e476282b75d89c73057bfa713db22d72bdb2808d62d981a84c33beb2575
   # updated ubi9 RH image registry.access.redhat.com/ubi9/openjdk-17@sha256:144419dd1caf7c4455418d2dbf99c1c02a07e9c207e9c66e0224b852633ea2fe
     - default: >-
-        registry.redhat.io/ubi8/openjdk-17@sha256:0d12c4097e098b62f78a7a31c0d711d78e1e5a53f4c007b9a5fc6cc6ab4dc018
+        registry.redhat.io/ubi8/openjdk-17@sha256:a8165bc2cd5051a96d6937e25ed03155bbd4b731da6e58cebfe2ea83209c16d8
       description: Maven base image
       name: MAVEN_IMAGE
       type: string
@@ -91,7 +91,7 @@ spec:
         - mountPath: /var/lib/docker
           name: dind-storage
   steps:
-    - image: 'registry.access.redhat.com/ubi8/ubi-minimal:8.2'
+    - image: 'registry.redhat.io/ubi8/ubi-minimal@sha256:6825946f10e8c81586fa7815c4f06016af05cfc231d921ec9699402a6655d201'
       name: mvn-settings
       computeResources: {}
       script: >
