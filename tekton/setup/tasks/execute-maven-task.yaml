@@ -91,8 +91,8 @@ spec:
         - mountPath: /var/lib/docker
           name: dind-storage
   steps:
-    - image: 'registry.redhat.io/ubi8/ubi-minimal@sha256:6825946f10e8c81586fa7815c4f06016af05cfc231d921ec9699402a6655d201'
-      name: mvn-settings
+    -  name: mvn-settings
+      image: 'registry.redhat.io/ubi8/ubi-minimal@sha256:6825946f10e8c81586fa7815c4f06016af05cfc231d921ec9699402a6655d201'
       computeResources: {}
       script: >
         #!/usr/bin/env bash
@@ -174,17 +174,17 @@ spec:
         # From my test environment, this container was able to find the `settings.xml` file without issue,
         # so there was no need to apply this modification:
         # runAsUser: 1001
-    - args:
+    - name: maven-goals
+      args:
         - '-s'
         - $(workspaces.maven-settings.path)/settings.xml
         - $(params.GOALS)
       command:
           - /usr/bin/mvn
       image: $(params.MAVEN_IMAGE)
-      name: mvn-goals
       computeResources: {}
       securityContext:
-        privileged: false
+        # privileged: false
         # This was the only truly required change I found to have my test environment's pipeline to run correctly
         runAsUser: 1001
       volumeMounts:
