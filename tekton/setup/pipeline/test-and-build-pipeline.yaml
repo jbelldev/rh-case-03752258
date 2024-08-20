@@ -10,6 +10,7 @@ spec:
   workspaces:
     - name: shared-workspace
     - name: maven-settings
+    - name: maven-local-repo
   params:
   - name: image-tag
     type: string
@@ -52,6 +53,8 @@ spec:
     workspaces:
       - name: maven-settings
         workspace: maven-settings
+      - name: maven-local-repo
+        workspace: maven-local-repo
       - name: source
         workspace: shared-workspace
   - name: build-service
@@ -72,3 +75,5 @@ spec:
       workspace: shared-workspace
     - name: maven-settings
       workspace: maven-settings
+    - name: maven-local-repo
+      workspace: maven-local-repo
