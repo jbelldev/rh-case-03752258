@@ -5,7 +5,7 @@ metadata:
     app.kubernetes.io/instance: test-and-build-pipeline
     pipeline.openshift.io/type: kubernetes
   name: test-and-build-reproducer
-  namespace: case03752258
+  namespace: case03838507
 spec:
   workspaces:
     - name: shared-workspace

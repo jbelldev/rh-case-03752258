@@ -2,24 +2,24 @@
 
 # PREREQUISITES
 # - CREATE THE git-task IS (see /README.md)
-# - VERIFY Namespace case03752258 is ACCEPTABLE
+# - VERIFY Namespace case03838507 is ACCEPTABLE
 # - have openshift-pipelines installed
 # - Be logged into your OC Cluster
 
 # CREATE NAMESMAPCE
-oc new-project case03752258 --display-name="CASE 03752258" --description="This namesapce is the reproducer for rh case 03752258."
+oc new-project case03838507 --display-name="case038385078" --description="This namesapce is the reproducer for rh case038385078."
 
 # SWITCH TO PROJECT
-oc project case03752258
+oc project case03838507
 
 # INSTALL SERVICE ACCOUNT AND CLUSTER BINDINGS
-oc create --save-config=true -f ./serviceAccounts/case03752258-cluster-role-binding.yaml
+oc create --save-config=true -f ./serviceAccounts/case03838507-cluster-role-binding.yaml
 
 # ALLOW SERVICE ACCOUNT PRIVILEGED ACCESS WITHIN NAMESPACE (required for tekton tasks requiring priviledged containers)
-oc adm policy add-scc-to-user privileged -z case03752258-pipeline-sa -n case03752258
+oc adm policy add-scc-to-user privileged -z case03838507-pipeline-sa -n case03838507
 
 # CREATE MAVEN SETTINGS CONFIG MAP
-oc create configmap maven-settings --from-file=./settings.xml  --namespace=case03752258
+oc create configmap maven-settings --from-file=./settings.xml  --namespace=case03838507
 
 # CREATE TEKTON TASKS
 oc create --save-config=true -f ./tasks/get-source-with-git-task.yaml
